@@ -1,6 +1,6 @@
 # Package
 
-version       = "0.1.1"
+version       = "0.1.2"
 author        = "Wesley Kerfoot"
 description   = "Interface to libxml2's XPath parser"
 license       = "MIT"
