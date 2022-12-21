@@ -1,7 +1,7 @@
 import system, strutils, sequtils, tables, strformat, options, futhark
 export options
 
-const clangResourceDir {.strdefine.}: string = "nothing" # defined by config.nims
+const clangResourceDir {.strdefine.}: string = staticExec("clang -print-resource-dir").strip
 importc:
   sysPath fmt"{clangResourceDir}/include"
   path: "/usr/include/libxml2/libxml"
