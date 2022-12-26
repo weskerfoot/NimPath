@@ -25,7 +25,7 @@ type HTMLNode = ref object of RootObj
 proc textContent*(node: HTMLNode): Option[string] =
   return node.node.xmlNodeGetContent.cstringToNim
 
-proc `$` (node: HTMLNode): string =
+proc `$`* (node: HTMLNode): string =
   $node.node[]
 
 iterator query*(xpath_expr: string, xpath_ctx : xmlXPathContextPtr): HTMLNode =
