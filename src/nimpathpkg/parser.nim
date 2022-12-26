@@ -47,6 +47,12 @@ iterator queryWithContext*(node: HTMLNode, xpath_expr: string) : HTMLNode =
 
   node.context = oldContext.addr
 
+proc getSingleWithContext*(node: HTMLNode, xpath_expr: string): Option[HTMLNode] =
+  var results = toSeq(queryWithContext(node, xpath_expr))
+  if len(results) == 0:
+    return none(HTMLNode)
+  return some(results[0])
+
 iterator parseTree*(input: string, xpath_expr: string, base_url: string) : HTMLNode =
   var input_p : cstring = input.cstring
   var input_p_size : cint = input_p.len.cint
