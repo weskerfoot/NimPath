@@ -10,6 +10,7 @@ importc:
   "xpath.h"
   "xpathInternals.h"
   "tree.h"
+  "HTMLparser.h"
 
 proc cstringToNim(cst : cstring) : Option[string] =
   var nst = newString(cst.len)
@@ -53,7 +54,7 @@ iterator parseTree*(input: string, xpath_expr: string, base_url: string) : HTMLN
   var encoding : cstring = nil # TODO, different encodings?
   var options : cint = (XML_PARSE_RECOVER.int or XML_PARSE_NOWARNING.int or XML_PARSE_HUGE.int or XML_PARSE_NONET.int).cint
 
-  var parser_result : xmlDocPtr = xmlReadMemory(input_p, input_p_size, base_url, encoding, options)
+  var parser_result : xmlDocPtr = htmlReadMemory(input_p, input_p_size, base_url, encoding, options)
 
   var xpath_ctx : xmlXPathContextPtr = xmlXPathNewContext(parser_result)
 
