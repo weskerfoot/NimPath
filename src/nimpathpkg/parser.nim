@@ -45,14 +45,15 @@ iterator queryWithContext*(node: HTMLNode, xpath_expr: string) : HTMLNode =
   discard xmlXPathSetContextNode(node.node, node.context)
   for node in query(xpath_expr, node.context):
     yield node
-
   node.context = oldContext.addr
 
-proc getSingleWithContext*(node: HTMLNode, xpath_expr: string): Option[HTMLNode] =
-  var results = toSeq(queryWithContext(node, xpath_expr))
-  if len(results) == 0:
-    return none(HTMLNode)
-  return some(results[0])
+template getSingleWithContext*(node: HTMLNode, xpath_expr: string): Option[HTMLNode] =
+  block:
+    var results = toSeq(queryWithContext(node, xpath_expr))
+    if len(results) == 0:
+      none(HTMLNode)
+    else:
+      some(results[0])
 
 iterator parseTree*(input: string, xpath_expr: string, base_url: string) : HTMLNode =
   var input_p : cstring = input.cstring
