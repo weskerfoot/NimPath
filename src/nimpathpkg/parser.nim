@@ -41,11 +41,9 @@ iterator query*(xpath_expr: string, xpath_ctx : xmlXPathContextPtr): HTMLNode =
       yield HTMLNode(node: currentNode[], context: xpath_ctx)
 
 iterator queryWithContext*(node: HTMLNode, xpath_expr: string) : HTMLNode =
-  var oldContext = node.context[]
   discard xmlXPathSetContextNode(node.node, node.context)
   for node in query(xpath_expr, node.context):
     yield node
-  node.context = oldContext.addr
 
 template getSingleWithContext*(node: HTMLNode, xpath_expr: string): Option[HTMLNode] =
   block:
