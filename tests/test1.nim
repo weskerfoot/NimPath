@@ -6,7 +6,17 @@
 # To run these tests, simply execute `nimble test`.
 
 import unittest
+import nimpath
 
-import nimpathpkg/parser
-test "correct welcome":
-  parseTree("<html><body><h1>foobar</h1></body></html>")
+test "parseTree works":
+  for node in parseTree("<html><body><h1>foobar</h1></body></html>", "//*", ""):
+    echo $node
+
+test "parseTree works":
+  var testFile = "./test.html".open(fmRead)
+  for node in parseTree(testFile.readAll, "//*[self::h1 or self::div]", "https://example.org"):
+    var subnode = getSingleWithContext(node, "span")
+    if subnode.isSome:
+      echo $subnode.get.textContent
+    if node.node.name == "h1":
+      echo node.textContent.get

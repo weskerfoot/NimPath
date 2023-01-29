@@ -6,8 +6,6 @@ description   = "Interface to libxml2's XPath parser"
 license       = "MIT"
 srcDir        = "src"
 installExt    = @["nim"]
-bin           = @["nimpath"]
-
 
 # Dependencies
 
