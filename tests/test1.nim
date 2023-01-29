@@ -8,11 +8,11 @@
 import unittest
 import nimpath
 
-test "parseTree works":
+test "parseTree works with any element":
   for node in parseTree("<html><body><h1>foobar</h1></body></html>", "//*", ""):
     echo $node
 
-test "parseTree works":
+test "parseTree works with file":
   var testFile = "./test.html".open(fmRead)
   for node in parseTree(testFile.readAll, "//*[self::h1 or self::div]", "https://example.org"):
     var subnode = getSingleWithContext(node, "span")
