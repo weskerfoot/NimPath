@@ -19,7 +19,8 @@ proc cstringToNim(cst : cstring) : Option[string] =
     return some(nst)
   none(string)
 
-type HTMLNode = ref object of RootObj
+type HTMLNode* = ref object of RootObj
+  node_name*: Option[string]
   node*: ptr xmlNode
   context*: xmlXPathContextPtr
 
@@ -38,7 +39,7 @@ iterator query*(xpath_expr: string, xpath_ctx : xmlXPathContextPtr): HTMLNode =
   if nodes.nodeNr > 0:
     for i in (0..(nodes.nodeNr-1)):
       currentNode = cast[ptr xmlNodePtr](cast[int](nodes.nodeTab) + cast[int](i * nodes.nodeTab.sizeof))
-      yield HTMLNode(node: currentNode[], context: xpath_ctx)
+      yield HTMLNode(node_name: cstringToNim(currentNode[].name), node: currentNode[], context: xpath_ctx)
 
 iterator queryWithContext*(node: HTMLNode, xpath_expr: string) : HTMLNode =
   discard xmlXPathSetContextNode(node.node, node.context)

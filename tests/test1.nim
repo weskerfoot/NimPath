@@ -1,16 +1,11 @@
-# This is just an example to get you started. You may wish to put all of your
-# tests into a single file, or separate them into multiple `test1`, `test2`
-# etc. files (better names are recommended, just make sure the name starts with
-# the letter 't').
-#
-# To run these tests, simply execute `nimble test`.
-
-import unittest
-import nimpath
+import unittest, sequtils, nimpath, sugar
 
 test "parseTree works with any element":
+  var nodes : seq[HTMLNode] = toSeq(parseTree("<html><body><h1>foobar</h1></body></html>", "//*", ""))
+  assert map(nodes, (n) => n.node_name.get) == @["html", "body", "h1"]
   for node in parseTree("<html><body><h1>foobar</h1></body></html>", "//*", ""):
-    echo $node
+    if node.node_name.isSome and node.node_name.get == "h1":
+      assert node.textContent.get == "foobar"
 
 test "parseTree works with file":
   var testFile = "./test.html".open(fmRead)
@@ -19,4 +14,4 @@ test "parseTree works with file":
     if subnode.isSome:
       echo $subnode.get.textContent
     if node.node.name == "h1":
-      echo node.textContent.get
+      assert node.textContent.get == "foo bar baz"
