@@ -1,4 +1,4 @@
-import system, strutils, sequtils, tables, strformat, options, futhark
+import system, strutils, sequtils, tables, strformat, options, futhark, locks
 export options
 
 const clangResourceDir {.strdefine.}: string = staticExec("clang -print-resource-dir").strip
@@ -11,6 +11,9 @@ importc:
   "xpathInternals.h"
   "tree.h"
   "HTMLparser.h"
+
+var parserLock : Lock
+parserLock.initLock()
 
 proc cstringToNim(cst : cstring) : Option[string] =
   var nst = newString(cst.len)
@@ -55,6 +58,7 @@ template getSingleWithContext*(node: HTMLNode, xpath_expr: string): Option[HTMLN
       some(results[0])
 
 iterator parseTree*(input: string, xpath_expr: string, base_url: string) : HTMLNode =
+  parserLock.acquire()
   var input_p : cstring = input.cstring
   var input_p_size : cint = input_p.len.cint
   var base_url : cstring = base_url.cstring
@@ -76,3 +80,4 @@ iterator parseTree*(input: string, xpath_expr: string, base_url: string) : HTMLN
   parser_result.xmlFreeDoc
 
   xmlCleanupParser()
+  parserLock.release()
