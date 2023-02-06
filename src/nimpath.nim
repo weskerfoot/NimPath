@@ -28,7 +28,15 @@ type HTMLNode* = ref object of RootObj
   context*: xmlXPathContextPtr
 
 proc textContent*(node: HTMLNode): Option[string] =
-  return node.node.xmlNodeGetContent.cstringToNim
+  return cast[cstring](node.node.xmlNodeGetContent).cstringToNim
+
+iterator getAttributes*(node: HTMLNode): tuple[name: Option[string], value: Option[string]] =
+  var current_attr: ptr structxmlattr = node.node.properties
+  while current_attr != nil:
+    var value = cast[cstring](xmlNodeListGetString(node.node.doc, current_attr.children, 1))
+    yield (current_attr.name.cstringToNim, value.cstringToNim)
+    xmlFree(value)
+    current_attr = current_attr.next
 
 proc `$`* (node: HTMLNode): string =
   $node.node[]

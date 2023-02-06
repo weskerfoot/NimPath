@@ -15,6 +15,9 @@ test "parseTree works with file":
     if subnode.isSome:
       echo $subnode.get.textContent
     if node.node.name == "h1":
+      let expected_attrs = @[(name: some("id"), value: some("some_id")), (name: some("class"), value: some("header1"))]
+      let actual_attrs = toSeq(node.getAttributes)
+      assert expected_attrs == actual_attrs
       assert node.textContent.get == "foo bar baz"
 
 
