@@ -1,4 +1,5 @@
 import unittest, sequtils, nimpath, sugar
+import std/encodings as encode
 
 test "parseTree works with any element":
   var nodes : seq[HTMLNode] = toSeq(parseTree("<html><body><h1>foobar</h1></body></html>", "//*", ""))
@@ -15,3 +16,15 @@ test "parseTree works with file":
       echo $subnode.get.textContent
     if node.node.name == "h1":
       assert node.textContent.get == "foo bar baz"
+
+
+test "parseTree works with encoding":
+  var nodecount : int = 0.int
+  var testFile = "./test.html".open(fmRead)
+  let conv = encode.open("utf-7", "ascii")
+  let converted = encode.convert(conv, testFile.readAll)
+
+  for node in parseTree(converted, "//*", "https://example.org", encoding = some("utf-7")):
+    nodecount = nodecount + 1.int
+
+  assert nodecount == 8

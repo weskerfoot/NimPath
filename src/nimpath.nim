@@ -57,12 +57,17 @@ template getSingleWithContext*(node: HTMLNode, xpath_expr: string): Option[HTMLN
     else:
       some(results[0])
 
-iterator parseTree*(input: string, xpath_expr: string, base_url: string) : HTMLNode =
-  parserLock.acquire()
+iterator parseTree*(input: string,
+                    xpath_expr: string,
+                    base_url: string,
+                    locked : bool = true,
+                    encoding : Option[string] = none(string)) : HTMLNode =
+  if locked:
+    parserLock.acquire()
   var input_p : cstring = input.cstring
   var input_p_size : cint = input_p.len.cint
   var base_url : cstring = base_url.cstring
-  var encoding : cstring = nil # TODO, different encodings?
+  var encoding : cstring = if encoding.isNone: nil else: encoding.get.cstring
   var options : cint = (XML_PARSE_RECOVER.int or XML_PARSE_NOWARNING.int or XML_PARSE_HUGE.int or XML_PARSE_NONET.int).cint
 
   var parser_result : xmlDocPtr = htmlReadMemory(input_p, input_p_size, base_url, encoding, options)
@@ -80,4 +85,5 @@ iterator parseTree*(input: string, xpath_expr: string, base_url: string) : HTMLN
   parser_result.xmlFreeDoc
 
   xmlCleanupParser()
-  parserLock.release()
+  if locked:
+    parserLock.release()
