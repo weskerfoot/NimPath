@@ -27,6 +27,12 @@ type HTMLNode* = ref object of RootObj
   node*: ptr xmlNode
   context*: xmlXPathContextPtr
 
+type XMLDoc* = object
+  doc: xmlDocPtr
+
+proc `=destroy`(doc: var XMLDoc) =
+  doc.doc.xmlFree()
+
 proc textContent*(node: HTMLNode): Option[string] =
   return cast[cstring](node.node.xmlNodeGetContent).cstringToNim
 
@@ -65,32 +71,30 @@ template getSingleWithContext*(node: HTMLNode, xpath_expr: string): Option[HTMLN
     else:
       some(results[0])
 
-iterator parseTree*(input: string,
-                    xpath_expr: string,
-                    base_url: string,
-                    locked : bool = true,
-                    encoding : Option[string] = none(string)) : HTMLNode =
-  if locked:
-    parserLock.acquire()
+# TODO allow to pass options
+proc parseHTML*(input : string, base_url: string, encoding: Option[string] = none(string)) : XMLDoc =
   var input_p : cstring = input.cstring
   var input_p_size : cint = input_p.len.cint
   var base_url : cstring = base_url.cstring
   var encoding : cstring = if encoding.isNone: nil else: encoding.get.cstring
   var options : cint = (XML_PARSE_RECOVER.int or XML_PARSE_NOWARNING.int or XML_PARSE_HUGE.int or XML_PARSE_NONET.int).cint
+  XMLDoc(doc: htmlReadMemory(input_p, input_p_size, base_url, encoding, options))
 
-  var parser_result : xmlDocPtr = htmlReadMemory(input_p, input_p_size, base_url, encoding, options)
+iterator xpathQuery*(input: XMLDoc,
+                     xpath_expr: string,
+                     locked : bool = true) : HTMLNode =
+  if locked:
+    parserLock.acquire()
 
-  var xpath_ctx : xmlXPathContextPtr = xmlXPathNewContext(parser_result)
+  var xpath_ctx : xmlXPathContextPtr = xmlXPathNewContext(input.doc)
 
   if (xpath_ctx == nil):
     xpath_ctx.xmlXPathFreeContext
-    parser_result.xmlFreeDoc
 
   for node in query(xpath_expr, xpath_ctx):
     yield node
 
   xpath_ctx.xmlXPathFreeContext
-  parser_result.xmlFreeDoc
 
   xmlCleanupParser()
   if locked:
