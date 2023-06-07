@@ -20,7 +20,7 @@ test "xpathQuery works with file":
     var subnode = getSingleWithContext(node, "span")
     if subnode.isSome:
       assert $subnode.get.textContent.get == "this is a span"
-    if node.node.name == "h1":
+    if $node.node.name == "h1":
       let expected_attrs = @[(name: "id", value: "some_id"), (name: "class", value: "header1")]
       let actual_attrs = toSeq(node.getAttributes)
       assert expected_attrs == actual_attrs

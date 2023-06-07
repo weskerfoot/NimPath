@@ -56,7 +56,7 @@ iterator query*(xpath_expr: string, xpath_ctx : xmlXPathContextPtr): HTMLNode =
 
   if nodes.nodeNr > 0:
     for i in (0..(nodes.nodeNr-1)):
-      currentNode = cast[ptr xmlNodePtr](cast[int](nodes.nodeTab) + cast[int](i * nodes.nodeTab.sizeof))      
+      currentNode = cast[ptr xmlNodePtr](cast[int](nodes.nodeTab) + cast[int](i * nodes.nodeTab.sizeof))
       yield HTMLNode(node_name: stringOpt $currentNode[].name, node: currentNode[], context: xpath_ctx)
 
 iterator queryWithContext*(node: HTMLNode, xpath_expr: string) : HTMLNode =
