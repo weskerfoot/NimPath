@@ -15,12 +15,13 @@ importc:
 var parserLock : Lock
 parserLock.initLock()
 
-proc cstringToNim(cst : cstring) : Option[string] =
-  var nst = newString(cst.len)
-  if nst.len > 0:
-    copyMem(addr(nst[0]), cst, cst.len)
-    return some(nst)
-  none(string)
+proc `$`*(cst : ptr xmlChar) : string {.inline.} =
+  result = $cast[cstring](cst)
+
+func stringOpt(s: sink string): Option[string] =
+  ## Returns `None` if s is empty
+  if s.len > 0: 
+    result = some s
 
 type HTMLNode* = ref object of RootObj
   node_name*: Option[string]
@@ -34,13 +35,13 @@ proc `=destroy`(doc: var XMLDoc) =
   doc.doc.xmlFree()
 
 proc textContent*(node: HTMLNode): Option[string] =
-  return cast[cstring](node.node.xmlNodeGetContent).cstringToNim
+  stringOpt $node.node.xmlNodeGetContent
 
 iterator getAttributes*(node: HTMLNode): tuple[name: string, value: string] =
   var current_attr: ptr structxmlattr = node.node.properties
   while current_attr != nil:
     var value = cast[cstring](xmlNodeListGetString(node.node.doc, current_attr.children, 1))
-    yield (current_attr.name.cstringToNim.get, value.cstringToNim.get)
+    yield ($current_attr.name, $value)
     xmlFree(value)
     current_attr = current_attr.next
 
@@ -55,8 +56,8 @@ iterator query*(xpath_expr: string, xpath_ctx : xmlXPathContextPtr): HTMLNode =
 
   if nodes.nodeNr > 0:
     for i in (0..(nodes.nodeNr-1)):
-      currentNode = cast[ptr xmlNodePtr](cast[int](nodes.nodeTab) + cast[int](i * nodes.nodeTab.sizeof))
-      yield HTMLNode(node_name: cstringToNim(currentNode[].name), node: currentNode[], context: xpath_ctx)
+      currentNode = cast[ptr xmlNodePtr](cast[int](nodes.nodeTab) + cast[int](i * nodes.nodeTab.sizeof))      
+      yield HTMLNode(node_name: stringOpt $currentNode[].name, node: currentNode[], context: xpath_ctx)
 
 iterator queryWithContext*(node: HTMLNode, xpath_expr: string) : HTMLNode =
   discard xmlXPathSetContextNode(node.node, node.context)
