@@ -1,3 +1,6 @@
+# Copyright (C) 2023-2023 Wesley Kerfoot
+# MIT License, see license.txt
+
 import system, strutils, sequtils, tables, strformat, options, futhark, locks
 export options
 
