@@ -1,5 +1,7 @@
 ## API to allow for parsing HTML/XML and querying it using XPath expressions
 
+**Requires you to have libxml2 installed**
+
 Example
 ```nim
 var parsed = parseHTML("<html><body><h1>foobar</h1></body></html>", "")
