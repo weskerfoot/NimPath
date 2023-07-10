@@ -17,4 +17,4 @@ for node in xpathQuery(parsed, "//*"):
 
 See the tests for more detailed examples.
 
-To install, simply add `https://github.com/weskerfoot/NimPath >= 0.1.9` to your .nimble file, and make sure clang is installed, and add `switch("passL", "/usr/lib/libxml2.so")` to config.nims in your project (or pass the linker flag manually).
+To install, simply add `nimpath >= 0.1.9` to your .nimble file, and make sure clang is installed. If you installed libxml2 using something other than your package manager, it may require setting the linker flags in config.nims manually and/or using `LD_LIBRARY_PATH`.
