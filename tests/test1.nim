@@ -38,3 +38,12 @@ test "xpathQuery works with encoding":
     nodecount = nodecount + 1.int
 
   assert nodecount == 8
+
+test "iterlinks works":
+  var testFile = "./test_links.html".open(fmRead)
+  let links = toSeq(iterlinks(testFile.readAll, "http://example.org"))
+  assert links.len == 2
+
+  var testFile2 = "./test.html".open(fmRead)
+  let links2 = toSeq(iterlinks(testFile2.readAll, "http://example.org"))
+  assert links2.len == 0

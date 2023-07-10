@@ -1,7 +1,7 @@
 # Copyright (C) 2023-2023 Wesley Kerfoot
 # MIT License, see license.txt
 
-import system, strutils, sequtils, tables, strformat, options, futhark, locks
+import system, strutils, sequtils, tables, strformat, options, futhark, locks, sugar
 export options
 
 const clangResourceDir {.strdefine.}: string = staticExec("clang -print-resource-dir").strip
@@ -52,6 +52,7 @@ proc `$`* (node: HTMLNode): string =
   $node.node[]
 
 iterator query*(xpath_expr: string, xpath_ctx : xmlXPathContextPtr): HTMLNode =
+  # FIXME check if the xpath expression is valid
   var xpath_obj : xmlXPathObjectPtr = xmlXPathEvalExpression(cast[ptr xmlChar](xpath_expr.cstring), xpath_ctx);
   var nodes : xmlNodeSetPtr = xpath_obj.nodesetval;
 
@@ -77,7 +78,7 @@ template getSingleWithContext*(node: HTMLNode, xpath_expr: string): Option[HTMLN
       some(results[0])
 
 # TODO allow to pass options
-proc parseHTML*(input : string, base_url: string, encoding: Option[string] = none(string)) : XMLDoc =
+proc parseHTML*(input: string, base_url: string, encoding: Option[string] = none(string)): XMLDoc =
   var input_p : cstring = input.cstring
   var input_p_size : cint = input_p.len.cint
   var base_url : cstring = base_url.cstring
@@ -104,3 +105,14 @@ iterator xpathQuery*(input: XMLDoc,
   xmlCleanupParser()
   if locked:
     parserLock.release()
+
+iterator iterlinks*(input: string,
+                    base_url: string,
+                    encoding: Option[string] = none(string)): tuple[node: HTMLNode, href: Option[string]] =
+  var parsed = parseHTML(input, base_url)
+  for node in xpathQuery(parsed, "//a"):
+    let attr = toSeq(filter(toSeq(node.getAttributes), (a) => a.name == "href"))
+    if attr.len > 0:
+      yield (node, some(attr[0].value))
+    else:
+      yield (node, none(string))
