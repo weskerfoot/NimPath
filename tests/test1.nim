@@ -13,7 +13,7 @@ test "xpathQuery works with any element":
       assert node.textContent.get == "foobar"
 
 test "xpathQuery works with file":
-  var testFile = "./test.html".open(fmRead)
+  var testFile = "./tests/test.html".open(fmRead)
   var parsed = parseHTML(testFile.readAll, "https://example.org")
 
   for node in xpathQuery(parsed, "//*[self::h1 or self::div]"):
@@ -28,7 +28,7 @@ test "xpathQuery works with file":
 
 test "xpathQuery works with encoding":
   var nodecount : int = 0.int
-  var testFile = "./test.html".open(fmRead)
+  var testFile = "./tests/test.html".open(fmRead)
   let conv = encode.open("utf-7", "ascii")
   let converted = encode.convert(conv, testFile.readAll)
 
@@ -40,16 +40,16 @@ test "xpathQuery works with encoding":
   assert nodecount == 8
 
 test "iterlinks works":
-  var testFile = "./test_links.html".open(fmRead)
+  var testFile = "./tests/test_links.html".open(fmRead)
   let links = toSeq(iterlinks(testFile.readAll, "http://example.org"))
   assert links.len == 2
 
-  var testFile2 = "./test.html".open(fmRead)
+  var testFile2 = "./tests/test.html".open(fmRead)
   let links2 = toSeq(iterlinks(testFile2.readAll, "http://example.org"))
   assert links2.len == 0
 
 test "queryWithContext works":
-  var testFile = "./test.html".open(fmRead)
+  var testFile = "./tests/test.html".open(fmRead)
   var parsed = parseHTML(testFile.readAll, "https://example.org")
   for node in xpathQuery(parsed, "//div"):
     for subnode in queryWithContext(node, ".//*"):
