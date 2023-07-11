@@ -21,7 +21,6 @@ Example using `queryWithContext` to query against subnodes.
 
 var parsed = parseHTML("<html><body><h3>foobar</h3><h3>sdasdasd</h3><div><span>this is a span</span><span>this is another span</span></div><h1 id='some_id' class='header1'>foo bar baz</h1></body></html>")
 
-var nodes : seq[HTMLNode] = toSeq(xpathQuery(parsed, "//*"))
 for node in xpathQuery(parsed, "//div"):
     for subnode in queryWithContext(node, ".//*"):
         assert $subnode.node.name == "span"
