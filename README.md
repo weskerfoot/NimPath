@@ -4,6 +4,11 @@
 
 **Important: requires you to have libxml2 installed**
 
+build dependencies:
+* clang
+* pkg-config
+* libxml2 (installed system-wide)
+
 Example
 ```nim
 var parsed = parseHTML("<html><body><h1>foobar</h1></body></html>", "")
