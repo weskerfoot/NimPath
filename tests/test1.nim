@@ -47,3 +47,10 @@ test "iterlinks works":
   var testFile2 = "./test.html".open(fmRead)
   let links2 = toSeq(iterlinks(testFile2.readAll, "http://example.org"))
   assert links2.len == 0
+
+test "queryWithContext works":
+  var testFile = "./test.html".open(fmRead)
+  var parsed = parseHTML(testFile.readAll, "https://example.org")
+  for node in xpathQuery(parsed, "//div"):
+    for subnode in queryWithContext(node, ".//*"):
+      assert $subnode.node.name == "span"
