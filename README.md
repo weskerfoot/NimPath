@@ -26,11 +26,11 @@ for node in xpathQuery(parsed, "//div"):
         assert $subnode.node.name == "span"
 ```
 
-See the tests for more detailed examples.
+See the tests for more detailed examples. You can run the tests with `nimble test`.
 
 I have also written up a quick guide [here](https://wesk.tech/posts/nimpath-html-parsing/) with a more detailed explanation of how the library works.
 
-To install, add `nimpath >= 0.1.9` to your .nimble file, and make sure clang is installed. If you installed libxml2 using something other than your package manager, it may require setting the linker flags in config.nims manually and/or using `LD_LIBRARY_PATH`.
+To install, add `nimpath` to your .nimble file, and make sure clang is installed. If you installed libxml2 using something other than your package manager, it may require setting the linker flags in config.nims manually and/or using `LD_LIBRARY_PATH`.
 
 You must also add this code to `config.nims` to get it to build.
 
