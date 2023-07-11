@@ -1,6 +1,8 @@
 ## API to allow for parsing HTML/XML and querying it using XPath expressions
 
-**Requires you to have libxml2 installed**
+[https://nimble.directory/pkg/nimpath](https://nimble.directory/pkg/nimpath)
+
+**Important: requires you to have libxml2 installed**
 
 Example
 ```nim
