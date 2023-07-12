@@ -23,7 +23,7 @@ proc `$`*(cst : ptr xmlChar) : string {.inline.} =
 
 func stringOpt(s: sink string): Option[string] =
   ## Returns `None` if s is empty
-  if s.len > 0: 
+  if s.len > 0:
     result = some s
 
 type HTMLNode* = ref object of RootObj
